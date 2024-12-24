@@ -1,5 +1,8 @@
 from tkinter import *
 import tkinter.messagebox as box
+import os
+import json
+from datetime import datetime
 
 
 class ExpenseTracker:
@@ -8,11 +11,22 @@ class ExpenseTracker:
         self.window.title("Personal Expense Tracker")
 
         self.current_user = None
+        self.user_file = "users.json"
         self.login_frame = None
         self.register_frame = None
         self.main_frame = None
 
+        self.login_screen()
+
+    def initialise_user_screen(self):
+        """Initialise the user file if it doesn't exist"""
+        if not os.path.exists(self.user_file):
+            print(
+                f"The user file '{self.user_file} 'does not exist. Please create it manually"
+            )
+
     def login_screen(self):
+        """Shows the login screen"""
         if self.login_frame:
             self.login_frame.destroy()
         self.login_frame = Frame(self.window)
@@ -43,6 +57,7 @@ class ExpenseTracker:
             reg_btn.pack()
 
         def register_screen():
+            """Shows the register screen"""
             if self.login_frame:
                 self.login_frame.destroy()
             self.register_frame = Frame(self.window)
@@ -75,6 +90,7 @@ class ExpenseTracker:
             lgnI_btn.pack()
 
         def main_screen():
+            """Shows the main screen after login"""
             if self.login_frame:
                 self.login_frame.destroy()
             if self.register_frame:
@@ -89,6 +105,9 @@ class ExpenseTracker:
                 font=("Arial", 18),
             )
             wlcLabel.pack()
+
+            check_button = Button(self.main_frame, text="Check Expenses")
+            check_button.pack(padx=5)
 
             def log_out():
                 self.current_user = None
