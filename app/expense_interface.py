@@ -163,10 +163,16 @@ class ExpenseTracker:
                 amount = amount_entry.get()
                 category = category_entry.get()
                 date = date_entry.get()
+                self.expense_manager.add_expenses(name, amount, category, date)
+                box.showinfo("Success", "Expenses have been added succesfully")
 
+                # Checking if the amount entered is a digit
                 if not amount.isdigit():
                     box.showerror("Error", "Amount must be a number!")
                     return
+                # Checking of a date is provided by the user if not, the current date will be displayed
+                if not date.strip():
+                    date = datetime.now().strftime("%Y-%m-%d")
 
         addBtn = Button(self.add_expense_frame, text="Add", command=add_expenses)
         addBtn.pack(pady=5)
