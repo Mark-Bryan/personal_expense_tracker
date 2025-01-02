@@ -1,14 +1,17 @@
 from tkinter import *
 import tkinter.messagebox as box
 import os
-import json
 from datetime import datetime
+from models.expense import Expense
+from models.manager import ExpenseManager
 
 
 class ExpenseTracker:
     def __init__(self):
         self.window = Tk()
         self.window.title("Personal Expense Tracker")
+
+        self.expense_manager = ExpenseManager("data/expenses.json")
 
         self.current_user = None
         self.user_file = "users.json"
@@ -19,7 +22,7 @@ class ExpenseTracker:
         self.login_screen()
 
     def initialise_user_screen(self):
-        """Initialise the user file if it doesn't exist"""
+        """Initialises the user file if it doesn't exist"""
         if not os.path.exists(self.user_file):
             print(
                 f"The user file '{self.user_file} 'does not exist. Please create it manually"
@@ -32,7 +35,9 @@ class ExpenseTracker:
         self.login_frame = Frame(self.window)
         self.login_frame.pack(pady=15)
 
-        login_label = Label(self.login_frame, text="Login", font=("Arial", 18))
+        login_label = Label(
+            self.login_frame, text="Login", font=("Times New Roman", 18)
+        )
         login_label.pack()
 
         name_label = Label(self.login_frame, text="Username: ")
@@ -63,7 +68,9 @@ class ExpenseTracker:
             self.register_frame = Frame(self.window)
             self.register_frame.pack(pady=20)
 
-            reg_label = Label(self.register_frame, text="Register", font=("Arial", 18))
+            reg_label = Label(
+                self.register_frame, text="Register", font=("Times New Roman", 18)
+            )
             reg_label.pack()
 
             fullname_label = Label(self.register_frame, text="Full Name:")
@@ -102,19 +109,81 @@ class ExpenseTracker:
             wlcLabel = Label(
                 self.main_frame,
                 text=f"Welcome, {self.current_user}",
-                font=("Arial", 18),
+                font=("Times New Roman", 18),
             )
             wlcLabel.pack()
 
             check_button = Button(self.main_frame, text="Check Expenses")
             check_button.pack(padx=5)
 
-            def log_out():
-                self.current_user = None
-                self.main_frame.destroy()
-                self.login_screen()
+    def add_expenses(self):
+        if self.main_frame:
+            self.main_frame.destroy()
 
-            lgnO_btn = Button(self.main_frame, text="Log Out", command=log_out)
-            lgnO_btn.pack()
+            self.add_expense_frame = Frame(self.window)
+            self.add_expense_frame.pack(pady=20)
 
-            self.window.mainloop()
+            addExpense_label = Label(
+                self.add_expense_frame, text="Add Expense", font=("Times New ROman", 20)
+            )
+            addExpense_label.pack
+
+            username = Label(
+                self.add_expense_frame, text="Name: ", font=("Times New Roman", 19)
+            )
+            username.pack()
+            username_entry = Entry(self.add_expense_frame)
+            username_entry.pack()
+
+            amountLabel = Label(
+                self.add_expense_frame, text="Amount: ", font=("TImes New Roman", 19)
+            )
+            amountLabel.pack()
+            amount_entry = Entry(self.add_expense_frame)
+            amount_entry.pack()
+
+            category_label = Label(
+                self.add_expense_frame, text="Category: ", font=("Times New Roman", 20)
+            )
+            category_label.pack()
+            category_entry = Entry(self.add_expense_frame)
+            category_entry.pack()
+
+            date_label = Label(
+                self.add_expense_frame,
+                text="Date(YYY-MM-DD)",
+                font=("Times New Roman", 20),
+            )
+            date_label.pack()
+            date_entry = Entry(self.add_expense_frame)
+            date_entry.pack()
+
+            def add_expenses():
+                name = username_entry.get()
+                amount = amount_entry.get()
+                category = category_entry.get()
+                date = date_entry.get()
+
+                if not amount.isdigit():
+                    box.showerror("Error", "Amount must be a number!")
+                    return
+
+        addBtn = Button(self.add_expense_frame, text="Add", command=add_expenses)
+        addBtn.pack(pady=5)
+
+        backBtn = Button(self.add_expense_frame, text="Back", command=self.main_frame)
+        backBtn.pack()
+
+    def view_expenses_screen(self):
+        if self.login_frame:
+            self.login_frame.destroy()
+
+        expense_frame = Frame(self.window)
+        expense_frame.pack(pady=20)
+
+        expense_label = Label(
+            expense_frame, text="Your Expenses", font=("Times New Roman", 20)
+        )
+        expense_label.pack()
+
+        self.window.mainloop()
