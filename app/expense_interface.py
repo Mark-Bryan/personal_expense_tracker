@@ -209,4 +209,5 @@ class ExpenseTracker:
         if self.login_screen:
             self.login_screen.destroy()
 
-        self.window.mainloop()
+
+ExpenseTracker().window.mainloop()
