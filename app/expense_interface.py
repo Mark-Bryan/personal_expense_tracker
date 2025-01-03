@@ -2,16 +2,12 @@ from tkinter import *
 import tkinter.messagebox as box
 import os
 from datetime import datetime
-from models.expense import Expense
-from models.manager import ExpenseManager
 
 
 class ExpenseTracker:
     def __init__(self):
         self.window = Tk()
         self.window.title("Personal Expense Tracker")
-
-        self.expense_manager = ExpenseManager("data/expenses.json")
 
         self.current_user = None
         self.user_file = "users.json"
@@ -178,7 +174,7 @@ class ExpenseTracker:
         addBtn.pack(pady=5)
 
         backBtn = Button(self.add_expense_frame, text="Back", command=self.main_frame)
-        backBtn.pack()
+        backBtn.pack(pady=5)
 
     def view_expenses_screen(self):
         if self.login_frame:
@@ -191,5 +187,14 @@ class ExpenseTracker:
             expense_frame, text="Your Expenses", font=("Times New Roman", 20)
         )
         expense_label.pack()
+
+    def logout(self):
+        """Logs the user out and returns to the login screen"""
+        self.current_user = None
+        self.login_screen()
+
+    def clear_window(self):
+        if self.login_screen:
+            self.login_screen.destroy()
 
         self.window.mainloop()
