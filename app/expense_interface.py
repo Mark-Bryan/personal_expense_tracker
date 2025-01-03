@@ -8,6 +8,7 @@ class ExpenseTracker:
     def __init__(self):
         self.window = Tk()
         self.window.title("Personal Expense Tracker")
+        self.window.geometry("400x500")
 
         self.current_user = None
         self.user_file = "users.json"
@@ -54,63 +55,74 @@ class ExpenseTracker:
             login_btn = Button(self.login_frame, text="LogIn", command=login)
             login_btn.pack(pady=5)
 
-            reg_btn = Button(self.login_frame, text="Register", command=register_screen)
+            reg_btn = Button(
+                self.login_frame, text="Register", command=self.register_screen
+            )
             reg_btn.pack()
 
-        def register_screen():
-            """Shows the register screen"""
-            if self.login_frame:
-                self.login_frame.destroy()
-            self.register_frame = Frame(self.window)
-            self.register_frame.pack(pady=20)
+    def register_screen(self):
+        """Shows the register screen"""
+        if self.login_frame:
+            self.login_frame.destroy()
+        self.register_frame = Frame(self.window)
+        self.register_frame.pack(pady=20)
 
-            reg_label = Label(
-                self.register_frame, text="Register", font=("Times New Roman", 18)
-            )
-            reg_label.pack()
+        reg_label = Label(
+            self.register_frame, text="Register", font=("Times New Roman", 18)
+        )
+        reg_label.pack()
 
-            fullname_label = Label(self.register_frame, text="Full Name:")
-            full_name_entry = Entry(self.register_frame)
-            fullname_label.pack()
-            full_name_entry.pack()
+        fullname_label = Label(self.register_frame, text="Full Name:")
+        full_name_entry = Entry(self.register_frame)
+        fullname_label.pack()
+        full_name_entry.pack()
 
-            pd_label = Label(self.register_frame, text="Password")
-            pd_label.pack()
+        pd_label = Label(self.register_frame, text="Password")
+        pd_label.pack()
 
-            pd_entry = Entry(self.register_frame, show="*")
-            pd_entry.pack()
+        pd_entry = Entry(self.register_frame, show="*")
+        pd_entry.pack()
 
-            def register():
-                full_name = full_name_entry.get()
-                username = username_entry.get()
-                password = pwd_entry.get()
+        def register():
+            full_name = full_name_entry.get().strip()
+            password = pd_entry.get().strip()
+
+            box.showinfo("Success", "User has been registered succssfully")
 
             reg_btn = Button(self.register_frame, text="Register", command=register)
             reg_btn.pack()
             lgnI_btn = Button(
-                self.register_frame, text="Back To Login", command=main_screen
+                self.register_frame, text="Back To Login", command=self.login_screen
             )
             lgnI_btn.pack()
 
-        def main_screen():
-            """Shows the main screen after login"""
-            if self.login_frame:
-                self.login_frame.destroy()
-            if self.register_frame:
-                self.register_frame.destroy()
+    def main_screen(self):
+        """Shows the main screen after login"""
+        if self.login_frame:
+            self.login_frame.destroy()
+        if self.register_frame:
+            self.register_frame.destroy()
 
-            self.main_frame = Frame(self.window)
-            self.main_frame.pack(pady=20)
+        self.main_frame = Frame(self.window)
+        self.main_frame.pack(pady=20)
 
-            wlcLabel = Label(
-                self.main_frame,
-                text=f"Welcome, {self.current_user}",
-                font=("Times New Roman", 18),
-            )
-            wlcLabel.pack()
+        wlcLabel = Label(
+            self.main_frame,
+            text=f"Welcome, {self.current_user}",
+            font=("Times New Roman", 18),
+        )
+        wlcLabel.pack()
 
-            check_button = Button(self.main_frame, text="Check Expenses")
-            check_button.pack(padx=5)
+        addExp_Btn = Button(
+            self.main_frame, text="Add Expense", command=self.add_expenses
+        )
+        addExp_Btn.pack(pady=5)
+
+        check_button = Button(self.main_frame, text="Check Expenses")
+        check_button.pack(padx=5)
+
+        logOut_btn = Button(self.main_frame, text="Log Out", command=self.logout)
+        logOut_btn.pack(pady=5)
 
     def add_expenses(self):
         if self.main_frame:
@@ -154,12 +166,12 @@ class ExpenseTracker:
             date_entry = Entry(self.add_expense_frame)
             date_entry.pack()
 
-            def add_expenses():
+            def save_expenses():
                 name = username_entry.get()
                 amount = amount_entry.get()
                 category = category_entry.get()
                 date = date_entry.get()
-                self.expense_manager.add_expenses(name, amount, category, date)
+
                 box.showinfo("Success", "Expenses have been added succesfully")
 
                 # Checking if the amount entered is a digit
@@ -170,7 +182,7 @@ class ExpenseTracker:
                 if not date.strip():
                     date = datetime.now().strftime("%Y-%m-%d")
 
-        addBtn = Button(self.add_expense_frame, text="Add", command=add_expenses)
+        addBtn = Button(self.add_expense_frame, text="Save", command=save_expenses)
         addBtn.pack(pady=5)
 
         backBtn = Button(self.add_expense_frame, text="Back", command=self.main_frame)
