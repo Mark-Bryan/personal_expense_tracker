@@ -14,12 +14,7 @@ class ExpenseTracker:
         self.main = Authentication()
         self.current_user = None
         self.user_file = "tools/users.json"
-        self.expense_file = (
-            f"{self.current_user}_expenses.json"
-            if self.current_user
-            else "expenses.json"
-        )
-        self.expense_manager = ExpenseManager(self.expense_file)
+        self.expense_manager = None
 
         self.login_frame = None
         self.register_frame = None
@@ -41,6 +36,14 @@ class ExpenseTracker:
             print(
                 f"The user file '{self.user_file} 'does not exist. Please create it manually"
             )
+
+    def update_expense_manager(self):
+        """Updates The ExpenseManager class to use the current user's expense file"""
+        if self.current_user:
+            expense_file = f"tools{self.current_user}_expenses.json"
+            self.expense_manager = ExpenseManager(expense_file)
+        else:
+            self.expense_manager = None
 
     def main_menu(self):
         main_label = Label(
@@ -137,6 +140,7 @@ class ExpenseTracker:
 
             if self.main.authenticate_user(username, password):
                 self.current_user = username
+                self.update_expense_manager()
                 box.showinfo("Success", f"Welcome, {username}")
                 self.main_screen()
             else:
@@ -177,7 +181,7 @@ class ExpenseTracker:
         )
         check_button.pack(padx=5)
 
-        logOut_btn = Button(self.current_window, text="Log Out", command=self.main_menu)
+        logOut_btn = Button(self.current_window, text="Log Out", command=self.logout)
         logOut_btn.pack(pady=5)
 
     def add_expenses(self):
@@ -194,7 +198,7 @@ class ExpenseTracker:
             name_entry.pack()
 
             amountLabel = Label(
-                expense_window, text="Amount: ", font=("Times New Roman", 20)
+                expense_window, text="Amount(FCFA): ", font=("Times New Roman", 20)
             )
             amountLabel.pack()
             amount_entry = Entry(expense_window)
@@ -232,7 +236,9 @@ class ExpenseTracker:
                         box.showerror("Error", "Category is required")
 
                     else:
-                        ExpenseManager().add_expenses(name, int(amount), category, date)
+                        self.expense_manager.add_expenses(
+                            name, int(amount), category, date
+                        )
                         box.showinfo("Success", "Expense added succesfully")
                         expense_window.destroy()
 
@@ -266,20 +272,17 @@ class ExpenseTracker:
 
         expenses = self.expense_manager.retrieve_expenses()
 
-        if expenses is None:
-            box.showerror("Error", "Failed to load expenses")
-        else:
-            if not expenses:
-                exp_label = Label(expense_frame, text="No expenses recorded.")
-                exp_label.pack()
+        if not expenses:
+            exp_label = Label(expense_frame, text="No expenses recorded.")
+            exp_label.pack()
 
-            else:
-                for expense in expenses:
-                    ep_label = Label(
-                        expense_frame,
-                        text=f"{expense['name']} - {expense['amount']} ({expense['category']}, {expense['date']})",
-                    )
-                    ep_label.pack()
+        else:
+            for expense in expenses:
+                ep_label = Label(
+                    expense_frame,
+                    text=f"{expense['name']} - {expense['amount']} ({expense['category']}, {expense['date']})",
+                )
+                ep_label.pack()
 
         bck_btn = Button(view_expense_window, text="Back", command=self.main_screen)
         bck_btn.pack(pady=10)
@@ -287,6 +290,7 @@ class ExpenseTracker:
     def logout(self, main_window=None):
         """Logs the user out and returns to the login screen"""
         self.current_user = None
+        self.expense_manager = None
         if main_window:
             main_window.destroy()
         self.login_screen()
